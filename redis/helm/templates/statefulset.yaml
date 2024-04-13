@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: roboshop
+  labels:
+    app: redis
+    tier: db
+    project: roboshop
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      tier: db
+      project: roboshop
+  serviceName: "redis"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: db
+        project: roboshop
+    spec:
+      containers:
+      - name: redis
+        image: redis
+        volumeMounts:
+        - name: redis
+          mountPath: /data
+      volumes:
+      - name: redis
+        persistentVolumeClaim: # this is the PVC
+          claimName: ebs-redis-pvc

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+    tier: db
+    project: roboshop
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+      tier: db
+      project: roboshop
+  serviceName: "rabbitmq"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        tier: db
+        project: roboshop
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq
+        volumeMounts:
+        - name: rabbitmq
+          mountPath: /var/lib/rabbitmq
+  # this is PVC directly.
+  volumeClaimTemplates:
+  - metadata:
+      name: rabbitmq
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "roboshop-dynamic-ebs"
+      resources:
+        requests:
+          storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  clusterIP: None #headless
+  selector:
+    app: rabbitmq
+    tier: db
+    project: roboshop
+  ports:
+  - name: rabbitmq-port
+    protocol: TCP
+    port: 5672 # this port belongs to service
+    targetPort: 5672 # this port belongs to container

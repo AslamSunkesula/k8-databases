@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+    tier: db
+    project: roboshop
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+      tier: db
+      project: roboshop
+  serviceName: "mysql"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql
+        tier: db
+        project: roboshop
+    spec:
+      containers:
+      - name: mysql
+        image: aslamroboshop/mysql:1.0.0
+        envFrom:
+        - configMapRef:
+            name: mysql
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
+  # this is PVC directly.
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "roboshop-dynamic-ebs"
+      resources:
+        requests:
+          storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  clusterIP: None #headless
+  selector:
+    app: mysql
+    tier: db
+    project: roboshop
+  ports:
+  - name: mysql-port
+    protocol: TCP
+    port: 3306 # this port belongs to service
+    targetPort: 3306 # this port belongs to container
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql
+data:
+  MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # keep true in double quotes
+  MYSQL_DATABASE: "cities"
+  MYSQL_USER: "shipping"
+  MYSQL_PASSWORD: "RoboShop@1"
