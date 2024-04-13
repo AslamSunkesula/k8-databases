@@ -26,4 +26,3 @@ parameters:
   type: io1
   iopsPerGB: "50"
   encrypted: "true"
-```````
