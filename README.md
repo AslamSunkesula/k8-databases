@@ -14,7 +14,7 @@ kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernete
 2.provide access to EC2 servers
 3.create sc for EBS dynamic provisioning
 
-`````
+`````````
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -26,4 +26,4 @@ parameters:
   type: io1
   iopsPerGB: "50"
   encrypted: "true"
-````
+```````
