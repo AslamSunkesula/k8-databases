@@ -1,0 +1,37 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: roboshop
+  Labels:
+    app: mongodb
+    tier: db
+    project: roboshop
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+      tier: db
+      project: roboshop
+       # has to match .spec.template.metadata.labels
+  serviceName: "mongodb"
+  replicas: 1 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        tier: db 
+        project: roboshop     #this is pod definition
+    spec:
+      containers:
+      - name: mongodb
+        image: aslamroboshp/mongodb: "{{.values.statefulset.imageVersion}}"
+        volumeMounts:
+        - name: mogodb
+          mountPath: /data/db
+      volumes:
+        - name: mongodb
+          persistentVolumeClaim: #this is the PVc
+            claimName: ebs-dynamic-pvc

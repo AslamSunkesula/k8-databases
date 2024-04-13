@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  clusterIP: None #Headless server
+  selector:
+    app: mogodb
+    tier: db
+    project: roboshop
+  - name: mogodb-port
+    protocol: TCP
+    port: 27017 #this port belongs to service
+    targetPort: 27017 #this port belongs to container 

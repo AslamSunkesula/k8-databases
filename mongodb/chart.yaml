@@ -1,0 +1,5 @@
+apiVersion: v2
+name: mongodb
+version: 0.0.1
+description: This helm chart of mangodb
+appVersion: "1.0.0"

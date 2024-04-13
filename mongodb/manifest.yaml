@@ -1,0 +1,56 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  Labels:
+    app: mongodb
+    tier: db
+    project: roboshop
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+      tier: db
+      project: roboshop
+       # has to match .spec.template.metadata.labels
+  serviceName: "mongodb"
+  replicas: 1 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        tier: db 
+        project: roboshop     #this is pod definition
+    spec:
+      containers:
+      - name: mongodb
+        image: aslamroboshp/mogodb:1.0.0
+        volumeMounts:
+        - name: mogodb
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: mongodb
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "roboshop-dymic-ebs"
+      resources:
+        requests:
+          storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  clusterIP: None
+  selector:
+    app: mogodb
+    tier: db
+    project: roboshop
+  - name: mogodb-port
+    protocol: TCP
+    port: 27017 #this port belongs to service
+    targetPort: 27017 #this port belongs to container 
